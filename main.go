@@ -6,9 +6,18 @@ import (
 	"github.com/thedevsaddam/gojsonq"
 )
 var appconfig AppConfig 
-// func getKeys(jq interface{}) []string {
-// 	res := jq.First()
-// }
+func getKeys(jq *gojsonq.JSONQ) []string {
+	res := jq.First().(map[string]interface{})
+	keys := make([]string, len(res))
+    
+    i := 0
+    for k,_ := range res {
+	   fmt.Println(k)
+	   keys[i] = k
+	   i++
+	}
+	return keys
+}
 func main() {
 	jqUsers := gojsonq.New().File(appconfig.UsersJSONFile)
 	jqTickets := gojsonq.New().File(appconfig.TicketsJSONFile)
@@ -18,11 +27,12 @@ func main() {
 	//res, err:= gojsonq.New().File("./tickets.json").Select("tags").Where("_id", "=", "436bf9b0-1147-4c0a-8439-6f79833bff5b").GetR()
 	//res := gojsonq.New().File("./tickets.json").Where("_id", "=", "436bf9b0-1147-4c0a-8439-6f79833bff5b").Get()//.([]interface{})
 	//res := gojsonq.New().File("./tickets.json").First()
-	// parameter := [3]string{"_id", "=", "436bf9b0-1147-4c0a-8439-6f79833bff5b"}
+	parameter := [3]string{"_id", "=", "436bf9b0-1147-4c0a-8439-6f79833bff5b"}
 	
-	// res := gojsonq.New().File("./tickets.json").Where(parameter[0],parameter[1],parameter[2]).Get()
+	res := gojsonq.New().File("./tickets.json").Where(parameter[0],parameter[1],parameter[2])
+	res1 := res.Get()
 	// res1 := gojsonq.New().File("./tickets.json").Get()
-	res1 := jqUsers.First()
+	//res1 := jqUsers.First()
 	res2 := jqTickets.First()
 	res3 := jqOrganizations.First()
 	// fmt.Println(res)
@@ -36,15 +46,16 @@ func main() {
 	//name, _ := res.String()
 	// fmt.Printf("%#v\n", res.(map[string]interface{})["_id"])
 	// fmt.Printf("%#v\n", (res.(map[string]interface{})))
-	mymap := (res2.(map[string]interface{}))
-	//keys := make([]int, len(mymap))
+// 	mymap := (res2.(map[string]interface{}))
+// 	//keys := make([]int, len(mymap))
     
-   // i := 0
-    for k,_ := range mymap {
-		// 
+//    // i := 0
+//     for k,_ := range mymap {
+// 		// 
 		
-		fmt.Println(k)
-	}
+// 		fmt.Println(k)
+// 	}
+    fmt.Println(getKeys(jqUsers))
 	res4 := jqUsers.Last()
     fmt.Println(res4)
 	//fmt.Println(keys)
