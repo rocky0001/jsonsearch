@@ -10,11 +10,10 @@ import (
 
 type AppConfig struct {
 	
-  UsersJSONFile         string `yaml:"usersJsonFile,omitempty"`
-  TicketsJSONFile       string `yaml:"ticketsJsonFile,omitempty"`
-  OrganizationsJSONFile string `yaml:"organizationsJsonFile,omitempty"`  
-} 
-
+	UsersJSONFile         string `yaml:"usersJsonFile,omitempty"`
+	TicketsJSONFile       string `yaml:"ticketsJsonFile,omitempty"`
+	OrganizationsJSONFile string `yaml:"organizationsJsonFile,omitempty"`  
+  } 
 
 func exitErrorf(msg string, args ...interface{}) {
 	fmt.Fprintf(os.Stderr, msg+"\n",args...)

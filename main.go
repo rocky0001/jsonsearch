@@ -1,45 +1,43 @@
 package main
 
 import (
-	"fmt"
+	//"fmt"
 
 	"github.com/thedevsaddam/gojsonq"
 )
+
+  
 var appconfig AppConfig 
-func getKeys(jq *gojsonq.JSONQ) []string {
-	res := jq.First().(map[string]interface{})
-	keys := make([]string, len(res))
-    
-    i := 0
-    for k,_ := range res {
-	   fmt.Println(k)
-	   keys[i] = k
-	   i++
-	}
-	return keys
-}
+// func getKeys(jq interface{}) []string {
+// 	res := jq.First()
+// }
 func main() {
 	jqUsers := gojsonq.New().File(appconfig.UsersJSONFile)
-	jqTickets := gojsonq.New().File(appconfig.TicketsJSONFile)
-	jqOrganizations := gojsonq.New().File(appconfig.OrganizationsJSONFile)
+	// jqTickets := gojsonq.New().File(appconfig.TicketsJSONFile)
+	// jqOrganizations := gojsonq.New().File(appconfig.OrganizationsJSONFile)
 	//jq := gojsonq.New().File("./tickets.json")
 	//fmt.Println(jq)
 	//res, err:= gojsonq.New().File("./tickets.json").Select("tags").Where("_id", "=", "436bf9b0-1147-4c0a-8439-6f79833bff5b").GetR()
 	//res := gojsonq.New().File("./tickets.json").Where("_id", "=", "436bf9b0-1147-4c0a-8439-6f79833bff5b").Get()//.([]interface{})
 	//res := gojsonq.New().File("./tickets.json").First()
-	parameter := [3]string{"_id", "=", "436bf9b0-1147-4c0a-8439-6f79833bff5b"}
+	// parameter := [3]string{"_id", "=", "436bf9b0-1147-4c0a-8439-6f79833bff5b"}
 	
-	res := gojsonq.New().File("./tickets.json").Where(parameter[0],parameter[1],parameter[2])
-	res1 := res.Get()
+	// res := gojsonq.New().File("./tickets.json").Where(parameter[0],parameter[1],parameter[2]).Get()
 	// res1 := gojsonq.New().File("./tickets.json").Get()
-	//res1 := jqUsers.First()
-	res2 := jqTickets.First()
-	res3 := jqOrganizations.First()
-	// fmt.Println(res)
+	var s JsonSearch
+	s.JQ = jqUsers
+	s.Key = "name"
+	s.Operator = "="
+	s.Value = "Loraine Pittman"
+	s.Search()
+	// res1 := jqUsers.First()
+	// res2 := jqTickets.First()
+	// res3 := jqOrganizations.First()
+	// // fmt.Println(res)
+	// // fmt.Println(res1)
 	// fmt.Println(res1)
-	fmt.Println(res1)
-	fmt.Println(res2)
-	fmt.Println(res3)
+	// fmt.Println(res2)
+	// fmt.Println(res3)
 	// if err != nil {
 	// 	fmt.Println(err)
 	// }
@@ -55,9 +53,8 @@ func main() {
 		
 // 		fmt.Println(k)
 // 	}
-    fmt.Println(getKeys(jqUsers))
-	res4 := jqUsers.Last()
-    fmt.Println(res4)
+// 	res4 := jqUsers.Last()
+//     fmt.Println(res4)
 	//fmt.Println(keys)
     	// res := jq.Where("_id", "=", "436bf9b0-1147-4c0a-8439-6f79833bff5b").OrWhere("_id", "=", nil).Get()
 	// fmt.Println(res)
