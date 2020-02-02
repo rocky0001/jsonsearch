@@ -32,6 +32,17 @@ func exitErrorf(msg string, args ...interface{}) {
 	fmt.Fprintf(os.Stderr, msg+"\n",args...)
 	os.Exit(1)
 }
+
+func getSearchFields(s string) []string {
+	res := (searchconfig.JQ[s].First().(map[string]interface{}))
+	fields := make([]string, len(res))
+	i := 0
+	for k,_ := range res {
+		fields[i] =k
+		i++
+	}	
+	return fields
+}
 var appconfig AppConfig 
 var searchconfig SearchConfig
 func init() {
@@ -45,11 +56,15 @@ func init() {
 	}
 	searchconfig.JQ = make(map[string]*gojsonq.JSONQ)
 	searchconfig.Outputs = make(map[string][]string)
+	searchconfig.Fields = make(map[string][]string)
 	searchconfig.JQ["Users"] = gojsonq.New().File(appconfig.UsersJSONFile)
 	searchconfig.JQ["Tickets"] = gojsonq.New().File(appconfig.TicketsJSONFile)
 	searchconfig.JQ["Organizations"] = gojsonq.New().File(appconfig.OrganizationsJSONFile)
 	searchconfig.Outputs["Users"] = appconfig.Outputfileds.Users
 	searchconfig.Outputs["Tickets"] = appconfig.Outputfileds.Tickets
 	searchconfig.Outputs["Organizations"] = appconfig.Outputfileds.Organizations
-	fmt.Println("userjson:",searchconfig.Outputs["Tickets"])
+	searchconfig.Fields["Users"] = getSearchFields("Users")
+	searchconfig.Fields["Tickets"] = getSearchFields("Tickets")
+	searchconfig.Fields["Organizations"] = getSearchFields("Organizations")
+	fmt.Println("userjson:",searchconfig.Fields["Tickets"])
 }
