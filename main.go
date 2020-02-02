@@ -1,17 +1,29 @@
 package main
 
 import (
-	//"fmt"
-
-	//"github.com/thedevsaddam/gojsonq"
+	
+	prompt "github.com/c-bata/go-prompt"
 )
 
   
+type CurrentStatus struct {
+	PromptPrefix string
+	Title string
+}
+var currentstatus CurrentStatus
 
-// func getKeys(jq interface{}) []string {
-// 	res := jq.First()
-// }
+
 func main() {
+	currentstatus.PromptPrefix = "search"
+    currentstatus.Title = "Zendesk Search"
+	p := prompt.New(
+		executor,
+		completer,
+		prompt.OptionPrefix(currentstatus.PromptPrefix+">> "),
+		prompt.OptionLivePrefix(changeLivePrefix),
+		prompt.OptionTitle(currentstatus.Title),
+	)
+	p.Run()
 	//jqUsers := gojsonq.New().File(appconfig.UsersJSONFile)
 	// jqTickets := gojsonq.New().File(appconfig.TicketsJSONFile)
 	// jqOrganizations := gojsonq.New().File(appconfig.OrganizationsJSONFile)
@@ -24,12 +36,12 @@ func main() {
 	
 	// res := gojsonq.New().File("./tickets.json").Where(parameter[0],parameter[1],parameter[2]).Get()
 	// res1 := gojsonq.New().File("./tickets.json").Get()
-	var s CurrentJsonSearch
-	s.CurrentJson = "Users"
-	s.Key = "name"
-	s.Operator = "="
-	s.Value = "Loraine Pittman"
-	s.Search()
+	// var s CurrentJsonSearch
+	// s.CurrentJson = "Users"
+	// s.Key = "name"
+	// s.Operator = "="
+	// s.Value = "Loraine Pittman"
+	// s.Search()
 	// res1 := jqUsers.First()
 	// res2 := jqTickets.First()
 	// res3 := jqOrganizations.First()

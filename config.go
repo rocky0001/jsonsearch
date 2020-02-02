@@ -57,14 +57,14 @@ func init() {
 	searchconfig.JQ = make(map[string]*gojsonq.JSONQ)
 	searchconfig.Outputs = make(map[string][]string)
 	searchconfig.Fields = make(map[string][]string)
-	searchconfig.JQ["Users"] = gojsonq.New().File(appconfig.UsersJSONFile)
-	searchconfig.JQ["Tickets"] = gojsonq.New().File(appconfig.TicketsJSONFile)
-	searchconfig.JQ["Organizations"] = gojsonq.New().File(appconfig.OrganizationsJSONFile)
-	searchconfig.Outputs["Users"] = appconfig.Outputfileds.Users
-	searchconfig.Outputs["Tickets"] = appconfig.Outputfileds.Tickets
-	searchconfig.Outputs["Organizations"] = appconfig.Outputfileds.Organizations
-	searchconfig.Fields["Users"] = getSearchFields("Users")
-	searchconfig.Fields["Tickets"] = getSearchFields("Tickets")
-	searchconfig.Fields["Organizations"] = getSearchFields("Organizations")
-	fmt.Println("userjson:",searchconfig.Fields["Tickets"])
+	searchconfig.JQ["users"] = gojsonq.New().File(appconfig.UsersJSONFile)
+	searchconfig.JQ["tickets"] = gojsonq.New().File(appconfig.TicketsJSONFile)
+	searchconfig.JQ["organizations"] = gojsonq.New().File(appconfig.OrganizationsJSONFile)
+	searchconfig.Outputs["users"] = appconfig.Outputfileds.Users
+	searchconfig.Outputs["tickets"] = appconfig.Outputfileds.Tickets
+	searchconfig.Outputs["organizations"] = appconfig.Outputfileds.Organizations
+	searchconfig.Fields["users"] = getSearchFields("users")
+	searchconfig.Fields["tickets"] = getSearchFields("tickets")
+	searchconfig.Fields["organizations"] = getSearchFields("organizations")
+	//fmt.Println("userjson:",searchconfig.Fields["tickets"])
 }
