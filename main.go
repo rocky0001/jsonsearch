@@ -3,16 +3,16 @@ package main
 import (
 	//"fmt"
 
-	"github.com/thedevsaddam/gojsonq"
+	//"github.com/thedevsaddam/gojsonq"
 )
 
   
-var appconfig AppConfig 
+
 // func getKeys(jq interface{}) []string {
 // 	res := jq.First()
 // }
 func main() {
-	jqUsers := gojsonq.New().File(appconfig.UsersJSONFile)
+	//jqUsers := gojsonq.New().File(appconfig.UsersJSONFile)
 	// jqTickets := gojsonq.New().File(appconfig.TicketsJSONFile)
 	// jqOrganizations := gojsonq.New().File(appconfig.OrganizationsJSONFile)
 	//jq := gojsonq.New().File("./tickets.json")
@@ -24,8 +24,8 @@ func main() {
 	
 	// res := gojsonq.New().File("./tickets.json").Where(parameter[0],parameter[1],parameter[2]).Get()
 	// res1 := gojsonq.New().File("./tickets.json").Get()
-	var s JsonSearch
-	s.JQ = jqUsers
+	var s CurrentJsonSearch
+	s.CurrentJson = "Users"
 	s.Key = "name"
 	s.Operator = "="
 	s.Value = "Loraine Pittman"

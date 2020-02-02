@@ -1,3 +1,18 @@
 usersJsonFile:  "./users.json"
 ticketsJsonFile: "./tickets.json"
 organizationsJsonFile: "./organizations.json"
+outputfileds:
+  users:
+     - "_id"
+     - "name"
+     - "timezone"
+  tickets:
+     - "_id"
+     - "subject"
+     - "type"
+  organizations:
+     -  "_id"
+     -  "name"
+     - "domain_names"
+     - "tags"
+
