@@ -9,7 +9,7 @@ type CurrentJsonSearch struct {
 	CurrentJson string
 	Key string
 	Operator  string
-	Value string
+	Value  interface{}
 }
 
 func (js *CurrentJsonSearch) Search() {
@@ -23,6 +23,6 @@ func isInputValid(input string, ops []string) bool {
 			return true
 		}
 	}
-    fmt.Println(input,"is NOT valid option.")
+    fmt.Println("Error: ",input,"is invalid. The valid options: ",ops)
 	return false
 }
