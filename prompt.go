@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"strings"
 	"regexp"
-    "os"
+	"os"
+	"strconv"
 	prompt "github.com/c-bata/go-prompt"
 )
 
@@ -43,16 +44,41 @@ func executorList(args []string) {
 	}
 
 }
-func executorWhere(args []string) {
+func getInputValue(args []string, input string) interface{} {
+    value := strings.Replace(input, args[0], "", 1)
+    value = strings.Replace(value, args[1], "", 1)
+	value = strings.Replace(value, args[2], "", 1)
+	value = strings.TrimSpace(value)
+	if v,err := strconv.Atoi(strings.TrimSpace(value));err==nil {
+	 return v
+	} else {
+		return strings.Replace(value, "\"", "", 2)
+	}
+}
+func executorWhere(args []string,input string) {
 	if len(args) < 4 || !isInputValid(args[1],searchconfig.Fields[currentstatus.PromptPrefix]) || !isInputValid(args[2],validOperators) {
 		fmt.Println("Incorrect arguments. Syntax: where <field>  <operator> <value> ")
 	} else {
-		 var s CurrentJsonSearch
-	     s.CurrentJson = currentstatus.PromptPrefix
-	     s.Key = args[1]
-	     s.Operator = args[2]
-		 s.Value = args[3]
-		 s.Search()
+		 value := getInputValue(args,input)
+		 search :=  CurrentJsonSearch {
+		 	currentstatus.PromptPrefix,
+		 	args[1],
+		 	args[2],
+		 	value,
+		 	//strings.TrimSpace(value),
+		  }
+		 search.Search()
+		 
+	}
+
+}
+func executorSelect(args []string) {
+	if len(args) != 2 || !isInputValid(args[1],jsonFileNames) {
+		fmt.Println("Incorrect arguments. Syntax: select users|tickets|organizations ")
+	} else {
+		currentstatus.PromptPrefix = args[1]
+		LivePrefixState.LivePrefix = currentstatus.PromptPrefix+">> " 
+		LivePrefixState.IsEnable = true
 	}
 
 }
@@ -65,9 +91,7 @@ func executor(in string) {
 	    case "quit":
 	    	os.Exit(0)
 	    case "select":
-	    	currentstatus.PromptPrefix = args[1]
-	    	LivePrefixState.LivePrefix = currentstatus.PromptPrefix+">> " 
-	    	LivePrefixState.IsEnable = true
+	    	executorSelect(args)
 	    case "list":
 			executorList(args)
 		default:
@@ -76,7 +100,7 @@ func executor(in string) {
 	case "users","tickets","organizations":
 		switch args[0] {
 	    case "where":
-	    	executorWhere(args)
+	    	executorWhere(args,in)
 	    case "return":
 	    	fmt.Println("return ")
 	    	currentstatus.PromptPrefix = "search"

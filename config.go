@@ -15,11 +15,17 @@ type AppConfig struct {
 	UsersJSONFile         string `yaml:"usersJsonFile"`
 	TicketsJSONFile       string `yaml:"ticketsJsonFile"`
 	OrganizationsJSONFile string `yaml:"organizationsJsonFile"`
-	Outputfileds          struct {
+	Outputfields          struct {
 		Users         []string `yaml:"users"`
 		Tickets       []string `yaml:"tickets"`
 		Organizations []string `yaml:"organizations"`
-	} `yaml:"outputfileds"`
+	} `yaml:"outputfields"`
+
+	Relatedoutputfields   struct {
+		Users         []string `yaml:"users"`
+		Tickets       []string `yaml:"tickets"`
+		Organizations []string `yaml:"organizations"`
+	} `yaml:"relatedoutputfields"`
 }
 
 type SearchConfig struct {
@@ -27,6 +33,7 @@ type SearchConfig struct {
 	JQ        map[string]*gojsonq.JSONQ
 	Fields    map[string][]string
 	Outputs   map[string][]string
+	ShortOutputs   map[string][]string
 } 
 func exitErrorf(msg string, args ...interface{}) {
 	fmt.Fprintf(os.Stderr, msg+"\n",args...)
@@ -56,13 +63,17 @@ func init() {
 	}
 	searchconfig.JQ = make(map[string]*gojsonq.JSONQ)
 	searchconfig.Outputs = make(map[string][]string)
+	searchconfig.ShortOutputs = make(map[string][]string)
 	searchconfig.Fields = make(map[string][]string)
 	searchconfig.JQ["users"] = gojsonq.New().File(appconfig.UsersJSONFile)
 	searchconfig.JQ["tickets"] = gojsonq.New().File(appconfig.TicketsJSONFile)
 	searchconfig.JQ["organizations"] = gojsonq.New().File(appconfig.OrganizationsJSONFile)
-	searchconfig.Outputs["users"] = appconfig.Outputfileds.Users
-	searchconfig.Outputs["tickets"] = appconfig.Outputfileds.Tickets
-	searchconfig.Outputs["organizations"] = appconfig.Outputfileds.Organizations
+	searchconfig.Outputs["users"] = appconfig.Outputfields.Users
+	searchconfig.Outputs["tickets"] = appconfig.Outputfields.Tickets
+	searchconfig.Outputs["organizations"] = appconfig.Outputfields.Organizations
+	searchconfig.ShortOutputs["users"] = appconfig.Relatedoutputfields.Users
+	searchconfig.ShortOutputs["tickets"] = appconfig.Relatedoutputfields.Tickets
+	searchconfig.ShortOutputs["organizations"] = appconfig.Relatedoutputfields.Organizations
 	searchconfig.Fields["users"] = getSearchFields("users")
 	searchconfig.Fields["tickets"] = getSearchFields("tickets")
 	searchconfig.Fields["organizations"] = getSearchFields("organizations")

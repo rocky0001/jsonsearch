@@ -1,7 +1,8 @@
 package main
 
 import (
-	
+	//"fmt"
+	//"github.com/thedevsaddam/gojsonq"
 	prompt "github.com/c-bata/go-prompt"
 )
 
@@ -14,6 +15,9 @@ var currentstatus CurrentStatus
 
 
 func main() {
+	//res := (searchconfig.JQ["users"].First().(map[string]interface{}))
+	//res := (gojsonq.New().File("./tickets.json").First().(map[string]interface{}))
+	//fmt.Printf("%#v\n", res["_id"])
 	currentstatus.PromptPrefix = "search"
     currentstatus.Title = "Zendesk Search"
 	p := prompt.New(
@@ -36,12 +40,12 @@ func main() {
 	
 	// res := gojsonq.New().File("./tickets.json").Where(parameter[0],parameter[1],parameter[2]).Get()
 	// res1 := gojsonq.New().File("./tickets.json").Get()
-	// var s CurrentJsonSearch
-	// s.CurrentJson = "Users"
-	// s.Key = "name"
-	// s.Operator = "="
-	// s.Value = "Loraine Pittman"
-	// s.Search()
+	var s CurrentJsonSearch
+	s.CurrentJson = "Users"
+	s.Key = "name"
+	s.Operator = "="
+	s.Value = "Loraine Pittman"
+	s.Search()
 	// res1 := jqUsers.First()
 	// res2 := jqTickets.First()
 	// res3 := jqOrganizations.First()
@@ -54,9 +58,9 @@ func main() {
 	// 	fmt.Println(err)
 	// }
 	//name, _ := res.String()
-	// fmt.Printf("%#v\n", res.(map[string]interface{})["_id"])
+	//fmt.Printf("%#v\n", res.(map[string]interface{})["_id"])
 	// fmt.Printf("%#v\n", (res.(map[string]interface{})))
-// 	mymap := (res2.(map[string]interface{}))
+// 	mymap := (res.(map[string]interface{}))
 // 	//keys := make([]int, len(mymap))
     
 //    // i := 0
