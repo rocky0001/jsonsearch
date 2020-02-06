@@ -89,6 +89,7 @@ func executorSelect(args []string) {
 		currentstatus.PromptPrefix = args[1]
 		LivePrefixState.LivePrefix = currentstatus.PromptPrefix+">> " 
 		LivePrefixState.IsEnable = true
+		fmt.Println(help2)
 	}
 
 }
@@ -105,7 +106,7 @@ func executor(in string) {
 	    case "list":
 			executorList(args)
 		default:
-			fmt.Println("choose right options")
+			fmt.Println(help1)
 		}
 	case "users","tickets","organizations":
 		switch args[0] {
@@ -118,8 +119,9 @@ func executor(in string) {
 	    	currentstatus.PromptPrefix = "search"
 	    	LivePrefixState.LivePrefix = currentstatus.PromptPrefix+">> " 
 			LivePrefixState.IsEnable = true
+			fmt.Println(help1)
 		default:
-			fmt.Println("where _ = ?")
+			fmt.Println(help2)
 		}
 	}
 	
