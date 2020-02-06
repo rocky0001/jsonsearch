@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"gopkg.in/yaml.v2"
+	"reflect"
 	"os"
 	"github.com/thedevsaddam/gojsonq"
 
@@ -52,6 +53,8 @@ func getSearchFields(s string) []string {
 }
 var appconfig AppConfig 
 var searchconfig SearchConfig
+var fx gojsonq.QueryFunc
+
 func init() {
 	configFile, err := ioutil.ReadFile("config.yaml")
     if err != nil {
@@ -61,6 +64,18 @@ func init() {
 	if err != nil {
 		exitErrorf("Parsing Config File Error: ", err)
 	}
+	fx = func(x, y interface{}) (bool, error) {
+		arr := reflect.ValueOf(x)
+		if arr.Kind() != reflect.Slice {
+			return false, fmt.Errorf("%v invalid data type,\"has\" only support query list data,such as: tags,domain_names. your input:",x)
+		}
+		for _,t := range x.([]interface{}) {
+		   if t ==y {
+			   return true,nil
+		   }	
+		 }
+		 return false,nil
+	   }
 	searchconfig.JQ = make(map[string]*gojsonq.JSONQ)
 	searchconfig.Outputs = make(map[string][]string)
 	searchconfig.ShortOutputs = make(map[string][]string)
@@ -77,5 +92,8 @@ func init() {
 	searchconfig.Fields["users"] = getSearchFields("users")
 	searchconfig.Fields["tickets"] = getSearchFields("tickets")
 	searchconfig.Fields["organizations"] = getSearchFields("organizations")
-	//fmt.Println("userjson:",searchconfig.Fields["tickets"])
+	searchconfig.JQ["users"].Macro("has",fx)
+	searchconfig.JQ["tickets"].Macro("has",fx)
+	searchconfig.JQ["organizations"].Macro("has",fx)
+
 }
