@@ -6,6 +6,7 @@ import (
 	"gopkg.in/yaml.v2"
 	"reflect"
 	"os"
+	"sort"
 	"github.com/thedevsaddam/gojsonq"
 
 )
@@ -54,6 +55,7 @@ func getSearchFields(s string) []string {
 		fields[i] =k
 		i++
 	}	
+	sort.Strings(fields)
 	return fields
 }
 var appconfig AppConfig 

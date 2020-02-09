@@ -3,6 +3,7 @@ package main
 import (
 	"reflect"
 	"testing"
+	"github.com/thedevsaddam/gojsonq"
 )
 
 func init() {
@@ -173,7 +174,30 @@ func init() {
 			"Trevino"
 		  ]
 		}]`
+	type SearchConfig struct {
 	
+	   JQ        map[string]*gojsonq.JSONQ
+	   Fields    map[string][]string
+	   Outputs   map[string][]string
+	   ShortOutputs   map[string][]string
+    } 
+    var searchconfig SearchConfig
+    searchconfig.JQ = make(map[string]*gojsonq.JSONQ)
+	searchconfig.Outputs = make(map[string][]string)
+	searchconfig.ShortOutputs = make(map[string][]string)
+	searchconfig.Fields = make(map[string][]string)
+	searchconfig.JQ["users"] = gojsonq.New().FromString(users_json)
+	searchconfig.JQ["tickets"] = gojsonq.New().FromString(tickets_json)
+	searchconfig.JQ["organizations"] = gojsonq.New().FromString(organizations_json)
+	// searchconfig.Outputs["users"] = appconfig.Outputfields.Users
+	// searchconfig.Outputs["tickets"] = appconfig.Outputfields.Tickets
+	// searchconfig.Outputs["organizations"] = appconfig.Outputfields.Organizations
+	// searchconfig.ShortOutputs["users"] = appconfig.Relatedoutputfields.Users
+	// searchconfig.ShortOutputs["tickets"] = appconfig.Relatedoutputfields.Tickets
+	// searchconfig.ShortOutputs["organizations"] = appconfig.Relatedoutputfields.Organizations
+	// searchconfig.Fields["users"] = getSearchFields("users")
+	searchconfig.Fields["tickets"] = []string{"_id","assignee_id","created_at","description","due_at","external_id","has_incidents","organization_id","priority","status","subject","submitter_id","tags","type","url","via",}
+	searchconfig.Fields["organizations"] = []string{"_id","created_at","details", "domain_names", "external_id", "name", "shared_tickets", "tags" ,"url",}
 
 }
 func Test_getSearchFields(t *testing.T) {
@@ -185,13 +209,16 @@ func Test_getSearchFields(t *testing.T) {
 		args args
 		want []string
 	}{
-		// TODO: Add test cases.
+		{"test_organizations",args{"organizations",},[]string{"_id","created_at","details", "domain_names", "external_id", "name", "shared_tickets", "tags" ,"url",}},
+		{"test_tickets",args{"tickets",},[]string{"_id","assignee_id","created_at","description","due_at","external_id","has_incidents","organization_id","priority","status","subject","submitter_id","tags","type","url","via",}},
+		{"test_users",args{"users",},[]string{"_id","active","alias","created_at","email","external_id","last_login_at","locale","name","organization_id","phone","role","shared","signature","suspended","tags","timezone","url","verified",}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := getSearchFields(tt.args.s); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("getSearchFields() = %v, want %v", got, tt.want)
-			}
+		   if got := getSearchFields(tt.args.s);! reflect.DeepEqual(got, tt.want) {
+			t.Errorf("getSearchFields() = %v, want %v", got, tt.want)
+		}
+			
 		})
 	}
 }
