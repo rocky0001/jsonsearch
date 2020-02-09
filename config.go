@@ -42,7 +42,12 @@ func exitErrorf(msg string, args ...interface{}) {
 }
 
 func getSearchFields(s string) []string {
-	res := (searchconfig.JQ[s].First().(map[string]interface{}))
+    search :=searchconfig.JQ[s].First()
+	err := searchconfig.JQ[s].Error()
+    if err != nil {
+		exitErrorf("Get Searchable fields error:",err)
+	}
+	res := search.(map[string]interface{})
 	fields := make([]string, len(res))
 	i := 0
 	for k,_ := range res {
@@ -95,5 +100,4 @@ func init() {
 	searchconfig.JQ["users"].Macro("has",fx)
 	searchconfig.JQ["tickets"].Macro("has",fx)
 	searchconfig.JQ["organizations"].Macro("has",fx)
-
 }

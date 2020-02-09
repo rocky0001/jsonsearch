@@ -5,6 +5,8 @@
 4. Type of the Search value can be **bool** **int** **string**
 5. Using [go-prompt](https://github.com/c-bata/go-prompt) library for building powerful interactive prompts
 6. Using [gojsonq](https://github.com/thedevsaddam/gojsonq) to do the json query
+## Demo
+![Demo](demo/jsonsearch.gif)
 ## Download the appliction
 Download the binary file from [https://github.com/rocky0001/jsonsearch/releases](https://github.com/rocky0001/jsonsearch/releases)
 ## config.yaml

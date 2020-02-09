@@ -3,78 +3,203 @@ package main
 import (
 	"fmt"
 	"strconv"
-	"github.com/cheynewallace/tabby"
+    "github.com/thedevsaddam/gojsonq"
 	
 )
 
-type CurrentJsonSearch struct {
-	CurrentJson string
+type JsonSearch struct {
+	FromJson string
+	JQ *gojsonq.JSONQ
 	Key string
 	Operator  string
+	IsNew bool
 	Value  interface{}
+	Outputs []string
+	RelatedSearch []SubSearch
+}
+type SubSearch struct {
+	FromJson string
+	JQ *gojsonq.JSONQ
+	Key string
+	RelatedKey string
+	Note string
+	ShortOutputs []string
+}
+func createSearch(json string,key string,op string,value interface{},isNew bool) JsonSearch {
+	var js JsonSearch
+	js.FromJson = json
+	js.JQ = searchconfig.JQ[json]
+	js.Key = key
+	js.Value = value
+	js.Operator = op
+	js.Outputs = searchconfig.Outputs[json]
+	js.IsNew = isNew
+	switch js.FromJson {
+	case "users":
+		js.RelatedSearch =  append(js.RelatedSearch,SubSearch{
+			"organizations",
+			searchconfig.JQ["organizations"],
+			"_id",
+			"organization_id",
+			"organization",
+			searchconfig.ShortOutputs["organizations"],
+		   },
+		   SubSearch{
+			"tickets",
+			searchconfig.JQ["tickets"],
+			"submitter_id",
+			"_id",
+			"submitted_tickets",
+            searchconfig.ShortOutputs["tickets"],
+		   },SubSearch{
+			"tickets",
+			searchconfig.JQ["tickets"],
+			"assignee_id",
+			"_id",
+			"assigned_tickets",
+            searchconfig.ShortOutputs["tickets"],
+		   },
+		)
+	case "tickets":
+		js.RelatedSearch =  append(js.RelatedSearch,
+			SubSearch{
+			"organizations",
+			searchconfig.JQ["organizations"],
+			"_id",
+			"organization_id",
+			"organization",
+            searchconfig.ShortOutputs["organizations"],
+		   },
+		   SubSearch{
+			"users",
+			searchconfig.JQ["users"],
+			"_id",
+			"submitter_id",
+			"submitter_users",
+            searchconfig.ShortOutputs["users"],
+		   },
+		   SubSearch{
+			"users",
+			searchconfig.JQ["users"],
+			"_id",
+			"assignee_id",
+			"assignee_users",
+            searchconfig.ShortOutputs["users"],
+		   },
+		)
+    case "organizations":
+        js.RelatedSearch =  append(js.RelatedSearch,
+			SubSearch{
+			"users",
+			searchconfig.JQ["users"],
+			"organization_id",
+			"_id",
+			"users",
+            searchconfig.ShortOutputs["users"],
+		   },
+		   SubSearch{
+			"tickets",
+            searchconfig.JQ["tickets"],
+			"organization_id",
+			"_id",
+			"tickets",
+            searchconfig.ShortOutputs["tickets"],
+		   },
+		)
+		
+	}
+	return js
 }
 
-func  searchRelatedRecords(file string,json string,key string, value interface{}, t *tabby.Tabby) {
+func  getRelatedRecords(js JsonSearch,value map[string]interface{}) []Results {
+	if len(js.RelatedSearch) >0 {
+		var results []Results
+		var note string
+		fmt.Println("Searching related records:")
+		for o :=0;o<len(js.RelatedSearch);o++ {
+			s := js.RelatedSearch[o].JQ.Reset().Where(js.RelatedSearch[o].Key,"=",value[js.RelatedSearch[o].RelatedKey]).Get()
+			fmt.Println("Searching related records from:",js.RelatedSearch[o].FromJson,"where",js.RelatedSearch[o].Key,"=",value[js.RelatedSearch[o].RelatedKey])
+	        if subresults,ok := (s.([]interface{})); ok {
+	        	if len(subresults) > 0 {
+	        		for p,res := range subresults {
+	        			
+						note = js.RelatedSearch[o].Note + "_"+strconv.Itoa(p+1)
+						outputs := js.RelatedSearch[o].ShortOutputs
+						//add dividing  line
+					    results = append(results,Results{
+					    	".....",
+					    	"..........",
+					    	"...........",
+					    })
+						for q :=0; q < len(outputs); q++ {
+							//t.AddLine(json,output[h],(res[output[h]]))
+							results = append(results,Results{
+								note,
+								outputs[q],
+								res.(map[string]interface{})[outputs[q]],
+							})
+						}
+	        			
+					}
+					
+	        	}
+	        }
 
-	s := searchconfig.JQ[json].Reset().Where(key,"=",value).Get()
-	if results,ok := (s.([]interface{})); ok {
-		if len(results) > 0 {
-			for i,res := range results {
-				var rec string
-				rec = file + "_"+strconv.Itoa(i+1)
-				addTableLine(t,rec,searchconfig.ShortOutputs[json],res.(map[string]interface{}))
-				
-			}
 		}
+		return results
 	}
+
+	return nil
 	
 }
 
-func (js *CurrentJsonSearch) Search(new bool) {
-	var res interface{}
-	if new {
-		res = searchconfig.JQ[js.CurrentJson].Reset().Where(js.Key,js.Operator,js.Value).Get()
-	} else {
-        res = searchconfig.JQ[js.CurrentJson].Where(js.Key,js.Operator,js.Value).Get()
-	}
-	
-	
+func (js *JsonSearch) Search() interface{} {
+		var res interface{}
+		if js.IsNew {
+			res = js.JQ.Reset().Where(js.Key,js.Operator,js.Value).Get()
+		} else {
+	        res = js.JQ.Where(js.Key,js.Operator,js.Value).Get()
+		}
+		return res
+}
+type Results struct {
+	Note string
+	Key string
+	Value interface{}
+}
+func getSearchResults(js JsonSearch) []Results {
+
+	var results  []Results
+	res := js.Search()
 	if arr,ok := (res.([]interface{})); ok {
 		if len(arr) > 0 {
-			t := tabby.New()
+			//t := tabby.New()
 			for i :=0; i < len(arr); i++ {
-				var rec string
-				rec = js.CurrentJson+"_"+strconv.Itoa(i+1)
-				t.AddHeader(rec, "---Key---","---Value---")
-				addTableLine(t,rec,searchconfig.Outputs[js.CurrentJson],arr[i].(map[string]interface{}))
-				//search related entities from other json.
-				switch js.CurrentJson {
-				case "users":
-					//search organization_id
-					searchRelatedRecords("organization","organizations","_id",(arr[i].(map[string]interface{}))["organization_id"],t)
-					//search tickets with submitter_id
-					searchRelatedRecords("submitted_tickets","tickets","submitter_id",(arr[i].(map[string]interface{}))["_id"],t)
-					//search tickets with assignee_id
-					searchRelatedRecords("assigned_tickets","tickets","assignee_id",(arr[i].(map[string]interface{}))["_id"],t)
-				case "tickets":
-                    //search organization_id
-					searchRelatedRecords("organization","organizations","_id",(arr[i].(map[string]interface{}))["organization_id"],t)
-					//search users with submitter_id
-					searchRelatedRecords("submitter_user","users","_id",(arr[i].(map[string]interface{}))["submitter_id"],t)
-					//search tickets with assignee_id
-					searchRelatedRecords("assignee_user","users","_id",(arr[i].(map[string]interface{}))["assignee_id"],t)
-				case "organizations":
-					//search organization_id from users
-					searchRelatedRecords("users","users","organization_id",(arr[i].(map[string]interface{}))["_id"],t)
-					//search organization_id from tickets
-					searchRelatedRecords("tickets","tickets","organization_id",(arr[i].(map[string]interface{}))["_id"],t)
-				}	
+				var note string
+				note = js.FromJson+"_"+strconv.Itoa(i+1)
+				outputs := searchconfig.Outputs[js.FromJson]
+				for q :=0; q < len(outputs); q++ {
+					results = append(results,Results{
+						note,
+						outputs[q],
+						arr[i].(map[string]interface{})[outputs[q]],
+					})
+				}
+				results = append(results,getRelatedRecords(js,arr[i].(map[string]interface{}))...)
+				results = append(results,Results{
+					"-----",
+					"----------",
+					"---------------",
+				})
+			
 			}
-			t.Print()
+			return results
 		} else {
-            fmt.Println("Warning: No record was found.")
+			fmt.Println("Warning: No record was found.")
+			return nil
 	       }
-}
+    }
+	return nil
 }
 
 

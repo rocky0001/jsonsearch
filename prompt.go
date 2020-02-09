@@ -66,18 +66,14 @@ func getInputValue(args []string, input string) interface{} {
 		
 	}
 }
-func executorQuery(args []string,input string,new bool) {
+func executorQuery(args []string,input string,isnew bool) {
 	if len(args) < 4 || !isInputValid(args[1],searchconfig.Fields[currentstatus.PromptPrefix]) || !isInputValid(args[2],validOperators) {
 		fmt.Println("Incorrect arguments. Syntax: where <field>  <operator> <value> ")
 	} else {
 		 value := getInputValue(args,input)
-		 search :=  CurrentJsonSearch {
-		 	currentstatus.PromptPrefix,
-		 	args[1],
-		 	args[2],
-		 	value,
-		  }
-		 search.Search(new)
+		 search :=  createSearch(currentstatus.PromptPrefix, args[1],args[2],value,isnew)
+		 showResults(getSearchResults(search)) 
+		// search.Search(new)
 		 
 	}
 

@@ -69,7 +69,7 @@ func Test_executorQuery(t *testing.T) {
 	type args struct {
 		args  []string
 		input string
-		new   bool
+		isnew bool
 	}
 	tests := []struct {
 		name string
@@ -79,7 +79,7 @@ func Test_executorQuery(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			executorQuery(tt.args.args, tt.args.input, tt.args.new)
+			executorQuery(tt.args.args, tt.args.input, tt.args.isnew)
 		})
 	}
 }

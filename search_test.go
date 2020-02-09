@@ -1,58 +1,104 @@
 package main
 
 import (
+	"reflect"
 	"testing"
-
-	"github.com/cheynewallace/tabby"
 )
 
-func Test_searchRelatedRecords(t *testing.T) {
+func Test_createSearch(t *testing.T) {
 	type args struct {
-		file  string
 		json  string
 		key   string
+		op    string
 		value interface{}
-		t     *tabby.Tabby
+		isNew bool
 	}
 	tests := []struct {
 		name string
 		args args
+		want JsonSearch
 	}{
 		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			searchRelatedRecords(tt.args.file, tt.args.json, tt.args.key, tt.args.value, tt.args.t)
+			if got := createSearch(tt.args.json, tt.args.key, tt.args.op, tt.args.value, tt.args.isNew); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("createSearch() = %v, want %v", got, tt.want)
+			}
 		})
 	}
 }
 
-func TestCurrentJsonSearch_Search(t *testing.T) {
-	type fields struct {
-		CurrentJson string
-		Key         string
-		Operator    string
-		Value       interface{}
-	}
+func Test_getRelatedRecords(t *testing.T) {
 	type args struct {
-		new bool
+		js    JsonSearch
+		value map[string]interface{}
 	}
 	tests := []struct {
-		name   string
-		fields fields
-		args   args
+		name string
+		args args
+		want []Results
 	}{
 		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			js := &CurrentJsonSearch{
-				CurrentJson: tt.fields.CurrentJson,
-				Key:         tt.fields.Key,
-				Operator:    tt.fields.Operator,
-				Value:       tt.fields.Value,
+			if got := getRelatedRecords(tt.args.js, tt.args.value); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("getRelatedRecords() = %v, want %v", got, tt.want)
 			}
-			js.Search(tt.args.new)
+		})
+	}
+}
+
+func TestJsonSearch_Search(t *testing.T) {
+	type fields struct {
+		FromJson      string
+		Key           string
+		Operator      string
+		IsNew         bool
+		Value         interface{}
+		RelatedSearch []SubSearch
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   interface{}
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			js := &JsonSearch{
+				FromJson:      tt.fields.FromJson,
+				Key:           tt.fields.Key,
+				Operator:      tt.fields.Operator,
+				IsNew:         tt.fields.IsNew,
+				Value:         tt.fields.Value,
+				RelatedSearch: tt.fields.RelatedSearch,
+			}
+			if got := js.Search(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("JsonSearch.Search() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_getSearchResults(t *testing.T) {
+	type args struct {
+		js JsonSearch
+	}
+	tests := []struct {
+		name string
+		args args
+		want []Results
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := getSearchResults(tt.args.js); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("getSearchResults() = %v, want %v", got, tt.want)
+			}
 		})
 	}
 }
